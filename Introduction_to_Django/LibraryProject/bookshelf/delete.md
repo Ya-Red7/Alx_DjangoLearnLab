@@ -1,1 +1,2 @@
-ret.delete() #(1, {'bookshelf.Book': 1})
+from bookshelf.models import Book
+book.delete() #(1, {'bookshelf.Book': 1})
