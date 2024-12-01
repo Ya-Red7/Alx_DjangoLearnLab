@@ -12,7 +12,7 @@ class BookSerializer(serializers.ModelSerializer):
             if data['publiation_year'] > 2024:
                 raise serializers.ValidationError("Book has not published yet.")
 
-class AuthorSerializer(serializers.ModelSerializers):
+class AuthorSerializer(serializers.ModelSerializer):
     #nested serializer
     books = BookSerializer(many=True, read_only=True)
     class Meta:
