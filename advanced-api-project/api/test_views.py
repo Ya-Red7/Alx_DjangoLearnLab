@@ -6,7 +6,7 @@ from .models import Book
 class BookAPITestCase(APITestCase):
 
     def setUp(self):
-        self.client = APIClient()
+        self.client.login = APIClient()
 
         # Sample data
         self.book1 = Book.objects.create(title="Book 1", author="Author A", publication_year="2020-01-01")
