@@ -112,7 +112,7 @@ def search_posts(request):
     ).distinct()
     return render(request, 'blog/search_results.html', {'query': query, 'results': results})
 
-class PostsByTagView(ListView):
+class PostByTagListView(ListView):
     template_name = 'blog/posts_by_tag.html'
     context_object_name = 'posts'
 
