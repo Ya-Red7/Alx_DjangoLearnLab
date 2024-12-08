@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
-from .models import Post
+from django.urls import reverse_lazy, reverse
+from .models import Post, Comment
+from .forms import CommentForm
 
 # Create your views here.
 
@@ -68,3 +69,34 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+    
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, id=self.kwargs['post_id'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.kwargs['post_id']})
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.id})
+
+    def test_func(self):
+        return self.request.user == self.get_object().author
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.id})
+
+    def test_func(self):
+        return self.request.user == self.get_object().author

@@ -14,3 +14,14 @@
 
 ### Navigation:
 - Links between pages for seamless interaction.
+
+
+
+
+Commenting:
+Authenticated users can add comments via the post detail page.
+Editing and Deleting:
+Users can edit/delete only their comments using the provided links.
+Permissions:
+Guest users can only view comments.
+Authors have full control over their comments.

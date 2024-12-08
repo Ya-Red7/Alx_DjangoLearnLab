@@ -15,6 +15,26 @@
         <a href="{% url 'post-delete' post.id %}">Delete</a>
     {% endif %}
 
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in post.comments.all %}
+            <li>
+                <strong>{{ comment.author }}</strong> ({{ comment.created_at|date:"M d, Y H:i" }}):
+                {{ comment.content }}
+                {% if comment.author == user %}
+                    <a href="{% url 'comment-edit' comment.id %}">Edit</a>
+                    <a href="{% url 'comment-delete' comment.id %}">Delete</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Leave a Comment</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
 
 </body>
 </html>
