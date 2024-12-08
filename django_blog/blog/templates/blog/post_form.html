@@ -11,6 +11,9 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Save</button>
+        <label for="tags">Tags:</label>
+        <input type="text" name="tags" value="{{ form.tags.value }}" placeholder="Comma-separated tags">
+
     </form>
     
 
