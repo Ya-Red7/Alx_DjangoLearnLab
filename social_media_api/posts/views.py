@@ -1,5 +1,6 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
@@ -7,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 class PostPagination(PageNumberPagination):
     page_size = 10
-    
+
 # Post ViewSet for CRUD operations
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -35,3 +36,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         """
         post = self.request.data.get('post')  # Get the post from the request data
         serializer.save(author=self.request.user, post_id=post)
+
+
+class FeedView(generics.ListAPIView):
+    """
+    View that returns posts from users the current user follows.
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
