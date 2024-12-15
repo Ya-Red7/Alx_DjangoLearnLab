@@ -1,10 +1,9 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions, status, generics
 from rest_framework.authentication import TokenAuthentication
-from rest_framework import status
 from .models import User
 from .serializers import UserSerializer, RegisterSerializer
 import logging
@@ -38,7 +37,7 @@ class LoginView(APIView):
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
     def get(self, request):
@@ -48,7 +47,7 @@ class UserDetailView(APIView):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def follow_user(request, user_id):
     """
     Allow the current user to follow another user.
@@ -62,7 +61,7 @@ def follow_user(request, user_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def unfollow_user(request, user_id):
     """
     Allow the current user to unfollow another user.
@@ -73,3 +72,16 @@ def unfollow_user(request, user_id):
 
     request.user.following.remove(user_to_unfollow)
     return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
+
+CustomUser = get_user_model()  # Import your custom user model
+
+class UserListView(generics.GenericAPIView):
+    """
+    A view to list all users. Only accessible to authenticated users.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        users = CustomUser.objects.all()  # Query all users
+        user_data = [{"id": user.id, "username": user.username} for user in users]
+        return Response({"users": user_data}, status=status.HTTP_200_OK)
