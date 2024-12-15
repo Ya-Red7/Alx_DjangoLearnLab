@@ -11,7 +11,7 @@ from notifications.models import Notification
 class PostPagination(PageNumberPagination):
     page_size = 10
 
-# Post ViewSet for CRUD operations
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
