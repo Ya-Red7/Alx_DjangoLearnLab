@@ -2,7 +2,6 @@ from rest_framework import viewsets, permissions, filters, generics, status, vie
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
@@ -79,7 +78,7 @@ class LikePostView(views.APIView):
 
     def post(self, request, pk):
         # Get the post or return 404
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
 
         # Create or get a like (prevents duplicates)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -101,7 +100,7 @@ class UnlikePostView(views.APIView):
 
     def post(self, request, pk):
         # Get the post or return 404
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
 
         # Check if the like exists
         like = Like.objects.filter(user=request.user, post=post)
